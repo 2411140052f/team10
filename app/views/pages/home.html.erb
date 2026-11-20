@@ -1,54 +1,88 @@
-<h1>ホーム</h1>
-
-<nav>
-  <%= link_to "ホーム", root_path %> |
-  <%= link_to "捜索願一覧", missing_reports_path %> |
-  <%= link_to "職員ログイン", staff_login_path %>
+<!-- 画面上部の青いナビゲーションバー -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 rounded px-3 shadow-sm">
+  <div class="container-fluid">
+    <span class="navbar-brand fw-bold">忘れ物管理システム</span>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="navbar-nav ms-auto">
+        <%= link_to "ホーム", root_path, class: "nav-link active" %>
+        <%= link_to "捜索願一覧", missing_reports_path, class: "nav-link" %>
+        <%= link_to "職員ログイン", staff_login_path, class: "nav-link" %>
+      </div>
+    </div>
+  </div>
 </nav>
 
-<h2>落とし物一覧</h2>
+<h2 class="mb-3 fw-bold">落とし物一覧</h2>
 
-<%= form_with url: root_path, method: :get, data: { turbo: false } do %>
-  <label for="sort">並び替え</label>
-  <select id="sort" name="sort">
-    <option value="date" <%= "selected" if params[:sort] == "date" %>>日付</option>
-    <option value="place" <%= "selected" if params[:sort] == "place" %>>場所</option>
-    <option value="category" <%= "selected" if params[:sort] == "category" %>>種類</option>
-  </select>
+<!-- 検索・絞り込みフォーム（相方の機能をBootstrapで装飾） -->
+<div class="card mb-4 shadow-sm border-0 bg-light">
+  <div class="card-body">
+    <%= form_with url: root_path, method: :get, data: { turbo: false }, class: "row g-3 align-items-end" do %>
+      <div class="col-md-3">
+        <label for="sort" class="form-label fw-bold">並び替え</label>
+        <select id="sort" name="sort" class="form-select">
+          <option value="date" <%= "selected" if params[:sort] == "date" %>>日付</option>
+          <option value="place" <%= "selected" if params[:sort] == "place" %>>場所</option>
+          <option value="category" <%= "selected" if params[:sort] == "category" %>>種類</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="found_at" class="form-label fw-bold">日時で絞り込み</label>
+        <input id="found_at" name="found_at" type="date" value="<%= params[:found_at] %>" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label for="found_place" class="form-label fw-bold">場所で絞り込み</label>
+        <input id="found_place" name="found_place" type="text" value="<%= params[:found_place] %>" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label for="category" class="form-label fw-bold">種類で絞り込み</label>
+        <input id="category" name="category" type="text" value="<%= params[:category] %>" class="form-control">
+      </div>
+      <div class="col-md-1">
+        <button type="submit" class="btn btn-primary w-100">検索</button>
+      </div>
+    <% end %>
+  </div>
+</div>
 
-  <div>
-    <label for="found_at">日時で絞り込み</label>
-    <input id="found_at" name="found_at" type="date" value="<%= params[:found_at] %>">
-  </div>
-  <div>
-    <label for="found_place">場所で絞り込み</label>
-    <input id="found_place" name="found_place" type="text" value="<%= params[:found_place] %>">
-  </div>
-  <div>
-    <label for="category">種類で絞り込み</label>
-    <input id="category" name="category" type="text" value="<%= params[:category] %>">
-  </div>
-  <button type="submit">検索</button>
-<% end %>
-
-<div>
+<!-- カード型デザインのグリッド -->
+<div class="row row-cols-1 row-cols-md-3 g-4">
   <% @lost_items.each do |lost_item| %>
-    <article>
-      <% if lost_item.photo.attached? %>
-        <%= image_tag lost_item.photo, alt: lost_item.name, width: 200 %>
-      <% end %>
-      <h3><%= lost_item.name %></h3>
-      <p>拾得場所: <%= lost_item.found_place %></p>
-      <% if lost_item.found_at %>
-        <p>拾得日時: <%= l(lost_item.found_at, format: :long) %></p>
-      <% end %>
-      <% if lost_item.category.present? %>
-        <p>種類: <%= lost_item.category %></p>
-      <% end %>
-      <% if lost_item.feature.present? %>
-        <p>特徴: <%= lost_item.feature %></p>
-      <% end %>
-      <p>状態: <%= lost_item.status %></p>
-    </article>
+    <div class="col">
+      <div class="card h-100 shadow-sm border-0 bg-light">
+        <!-- 写真部分 -->
+        <% if lost_item.photo.attached? %>
+          <%= image_tag lost_item.photo, class: "card-img-top rounded-top", style: "height: 200px; object-fit: cover;" %>
+        <% else %>
+          <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center rounded-top" style="height: 200px;">
+            <span class="fs-5">NO IMAGE</span>
+          </div>
+        <% end %>
+        
+        <!-- テキスト部分 -->
+        <div class="card-body">
+          <h5 class="card-title fw-bold text-dark"><%= lost_item.name %></h5>
+          <p class="card-text text-muted mb-2">
+            <strong>場所:</strong> <%= lost_item.found_place %><br>
+            <% if lost_item.found_at %>
+              <strong>日時:</strong> <%= l(lost_item.found_at, format: :short) %><br>
+            <% end %>
+            <% if lost_item.category.present? %>
+              <strong>種類:</strong> <%= lost_item.category %><br>
+            <% end %>
+            <% if lost_item.feature.present? %>
+              <strong>特徴:</strong> <%= lost_item.feature %><br>
+            <% end %>
+          </p>
+          <!-- ステータスバッジ -->
+          <span class="badge <%= lost_item.status == '受け取り済み' ? 'bg-success' : 'bg-warning text-dark' %> px-2 py-1">
+            <%= lost_item.status %>
+          </span>
+        </div>
+      </div>
+    </div>
   <% end %>
 </div>
