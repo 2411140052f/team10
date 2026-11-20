@@ -1,0 +1,54 @@
+<h1>ホーム</h1>
+
+<nav>
+  <%= link_to "ホーム", root_path %> |
+  <%= link_to "捜索願一覧", missing_reports_path %> |
+  <%= link_to "職員ログイン", staff_login_path %>
+</nav>
+
+<h2>落とし物一覧</h2>
+
+<%= form_with url: root_path, method: :get, data: { turbo: false } do %>
+  <label for="sort">並び替え</label>
+  <select id="sort" name="sort">
+    <option value="date" <%= "selected" if params[:sort] == "date" %>>日付</option>
+    <option value="place" <%= "selected" if params[:sort] == "place" %>>場所</option>
+    <option value="category" <%= "selected" if params[:sort] == "category" %>>種類</option>
+  </select>
+
+  <div>
+    <label for="found_at">日時で絞り込み</label>
+    <input id="found_at" name="found_at" type="date" value="<%= params[:found_at] %>">
+  </div>
+  <div>
+    <label for="found_place">場所で絞り込み</label>
+    <input id="found_place" name="found_place" type="text" value="<%= params[:found_place] %>">
+  </div>
+  <div>
+    <label for="category">種類で絞り込み</label>
+    <input id="category" name="category" type="text" value="<%= params[:category] %>">
+  </div>
+  <button type="submit">検索</button>
+<% end %>
+
+<div>
+  <% @lost_items.each do |lost_item| %>
+    <article>
+      <% if lost_item.photo.attached? %>
+        <%= image_tag lost_item.photo, alt: lost_item.name, width: 200 %>
+      <% end %>
+      <h3><%= lost_item.name %></h3>
+      <p>拾得場所: <%= lost_item.found_place %></p>
+      <% if lost_item.found_at %>
+        <p>拾得日時: <%= l(lost_item.found_at, format: :long) %></p>
+      <% end %>
+      <% if lost_item.category.present? %>
+        <p>種類: <%= lost_item.category %></p>
+      <% end %>
+      <% if lost_item.feature.present? %>
+        <p>特徴: <%= lost_item.feature %></p>
+      <% end %>
+      <p>状態: <%= lost_item.status %></p>
+    </article>
+  <% end %>
+</div>

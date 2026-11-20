@@ -7,3 +7,8 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+staff = Staff.find_or_initialize_by(username: "staff")
+staff.password = "staff1234"
+staff.role = "staff"
+staff.save!

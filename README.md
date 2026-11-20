@@ -28,3 +28,8 @@ LostItemモデル：name, found_place, found_at, feature, category, status, hand
 MissingReport:code(自動生成ID), name, lost_place, lost_at, feature, category, 写真
 
 DeletionRequest	:missing_report_id
+
+
+初期ログイン情報
+staff
+staff1234

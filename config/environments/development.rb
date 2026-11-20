@@ -15,6 +15,11 @@ Rails.application.configure do
   # Enable server timing.
   config.server_timing = true
 
+  # Codespaces accesses this app through an HTTPS reverse proxy. Origin is
+  # checked separately from the request host, so disable origin matching in
+  # development while retaining the authenticity-token check.
+  config.action_controller.forgery_protection_origin_check = false
+
   # Enable/disable Action Controller caching. By default Action Controller caching is disabled.
   # Run rails dev:cache to toggle Action Controller caching.
   if Rails.root.join("tmp/caching-dev.txt").exist?

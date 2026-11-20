@@ -1,0 +1,41 @@
+<h1>忘れ物登録</h1>
+
+<nav>
+  <%= link_to "ホーム", root_path %> |
+  <%= link_to "捜索願一覧", missing_reports_path %> |
+  <%= link_to "職員ログイン", staff_login_path %> |
+  <%= link_to "受け渡し登録", handover_registration_path %>
+</nav>
+<%= button_to "ログアウト", logout_path, method: :delete %>
+
+<% if flash[:alert] %>
+  <p role="alert"><%= flash[:alert] %></p>
+<% end %>
+
+<%= form_with model: LostItem.new, url: lost_item_registration_path, method: :post do |form| %>
+  <div>
+    <%= form.label :photo, "写真" %>
+    <%= form.file_field :photo, accept: "image/*" %>
+  </div>
+  <div>
+    <%= form.label :name, "名前を入力" %>
+    <%= form.text_field :name, required: true %>
+  </div>
+  <div>
+    <%= form.label :found_place, "場所を入力" %>
+    <%= form.text_field :found_place, required: true %>
+  </div>
+  <div>
+    <%= form.label :found_at, "日時" %>
+    <%= form.datetime_local_field :found_at %>
+  </div>
+  <div>
+    <%= form.label :category, "種類" %>
+    <%= form.text_field :category %>
+  </div>
+  <div>
+    <%= form.label :feature, "特徴" %>
+    <%= form.text_area :feature %>
+  </div>
+  <%= form.submit "登録" %>
+<% end %>
