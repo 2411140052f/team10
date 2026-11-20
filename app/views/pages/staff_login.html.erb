@@ -1,0 +1,21 @@
+<h1>職員ログイン</h1>
+
+<nav>
+  <%= link_to "ホーム", root_path %>
+</nav>
+
+<% if flash[:alert] %>
+  <p role="alert"><%= flash[:alert] %></p>
+<% end %>
+
+<%= form_with url: staff_login_path, method: :post, data: { turbo: false } do |form| %>
+  <div>
+    <%= form.label :username, "ユーザー名" %>
+    <%= form.text_field :username, autocomplete: "username", required: true %>
+  </div>
+  <div>
+    <%= form.label :password, "パスワード" %>
+    <%= form.password_field :password, autocomplete: "current-password", required: true %>
+  </div>
+  <button type="submit">ログイン</button>
+<% end %>

@@ -1,0 +1,54 @@
+<h1>捜索願一覧</h1>
+
+<nav>
+  <%= link_to "ホーム", root_path %> |
+  <%= link_to "捜索願一覧", missing_reports_path %> |
+  <%= link_to "職員ログイン", staff_login_path %>
+</nav>
+
+<p><%= link_to "捜索願を登録", missing_report_registration_path %></p>
+
+<% if flash[:notice] %>
+  <p role="status"><%= flash[:notice] %></p>
+<% end %>
+
+<%= form_with url: missing_reports_path, method: :get, data: { turbo: false } do %>
+  <label for="name">物の名前</label>
+  <input id="name" name="name" type="text" value="<%= params[:name] %>">
+
+  <label for="lost_place">落とした場所</label>
+  <input id="lost_place" name="lost_place" type="text" value="<%= params[:lost_place] %>">
+
+  <label for="lost_at">日時</label>
+  <input id="lost_at" name="lost_at" type="date" value="<%= params[:lost_at] %>">
+
+  <label for="feature">特徴</label>
+  <input id="feature" name="feature" type="text" value="<%= params[:feature] %>">
+
+  <label for="code">捜索願ID</label>
+  <input id="code" name="code" type="text" value="<%= params[:code] %>">
+
+  <button type="submit">検索</button>
+<% end %>
+
+<div>
+  <% @missing_reports.each do |missing_report| %>
+    <article>
+      <% if missing_report.photo.attached? %>
+        <%= image_tag missing_report.photo, alt: missing_report.name, width: 200 %>
+      <% end %>
+      <h2>捜索願ID: <%= missing_report.code %></h2>
+      <h3><%= missing_report.name %></h3>
+      <p>落とした場所: <%= missing_report.lost_place %></p>
+      <% if missing_report.lost_at %>
+        <p>落としたと思われる日時: <%= l(missing_report.lost_at, format: :long) %></p>
+      <% end %>
+      <% if missing_report.category.present? %>
+        <p>種類: <%= missing_report.category %></p>
+      <% end %>
+      <% if missing_report.feature.present? %>
+        <p>特徴: <%= missing_report.feature %></p>
+      <% end %>
+    </article>
+  <% end %>
+</div>

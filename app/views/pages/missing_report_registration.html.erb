@@ -1,0 +1,54 @@
+<h1>捜索願登録</h1>
+
+<nav>
+  <%= link_to "ホーム", root_path %> |
+  <%= link_to "捜索願一覧", missing_reports_path %>
+</nav>
+
+<% if flash[:alert] %>
+  <p role="alert"><%= flash[:alert] %></p>
+<% end %>
+<% if flash[:notice] %>
+  <p role="status"><%= flash[:notice] %></p>
+<% end %>
+
+<%= form_with model: (@missing_report || MissingReport.new), url: missing_report_registration_path, method: :post do |form| %>
+  <div>
+    <%= form.label :photo, "写真" %>
+    <%= form.file_field :photo, accept: "image/*" %>
+  </div>
+  <div>
+    <%= form.label :name, "物の名前" %>
+    <%= form.text_field :name, required: true %>
+  </div>
+  <div>
+    <%= form.label :lost_place, "落としたと思われる場所" %>
+    <%= form.text_field :lost_place, required: true %>
+  </div>
+  <div>
+    <%= form.label :lost_at, "落としたと思われる日時" %>
+    <%= form.datetime_local_field :lost_at %>
+  </div>
+  <div>
+    <%= form.label :feature, "特徴" %>
+    <%= form.text_area :feature %>
+  </div>
+  <%= form.submit "登録" %>
+<% end %>
+
+<h2>削除申請</h2>
+<%= form_with model: DeletionRequest.new, url: deletion_requests_path, method: :post do |form| %>
+  <div>
+    <%= form.label :missing_report_code, "捜索願ID" %>
+    <%= form.number_field :missing_report_code, min: 1, required: true %>
+  </div>
+  <div>
+    <%= form.label :student_number, "申請者の学籍番号" %>
+    <%= form.text_field :student_number, required: true %>
+  </div>
+  <div>
+    <%= form.label :name, "申請者の氏名" %>
+    <%= form.text_field :name, required: true %>
+  </div>
+  <%= form.submit "削除申請" %>
+<% end %>
