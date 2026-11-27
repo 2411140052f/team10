@@ -19,7 +19,7 @@
   </div>
   <div>
     <%= form.label :name, "物の名前" %>
-    <%= form.text_field :name, required: true %>
+    <%= form.text_field :name, required: true, maxlength: 39 %>
   </div>
   <div>
     <%= form.label :lost_place, "落としたと思われる場所" %>
@@ -31,7 +31,7 @@
   </div>
   <div>
     <%= form.label :feature, "特徴" %>
-    <%= form.text_area :feature %>
+    <%= form.text_area :feature, maxlength: 39 %>
   </div>
   <%= form.submit "登録" %>
 <% end %>
@@ -40,11 +40,11 @@
 <%= form_with model: DeletionRequest.new, url: deletion_requests_path, method: :post do |form| %>
   <div>
     <%= form.label :missing_report_code, "捜索願ID" %>
-    <%= form.number_field :missing_report_code, min: 1, required: true %>
+    <%= form.text_field :missing_report_code, inputmode: "numeric", pattern: "[0-9]*", required: true %>
   </div>
   <div>
     <%= form.label :student_number, "申請者の学籍番号" %>
-    <%= form.text_field :student_number, required: true %>
+    <%= form.text_field :student_number, required: true, inputmode: "numeric", pattern: "[0-9]{10}", maxlength: 10 %>
   </div>
   <div>
     <%= form.label :name, "申請者の氏名" %>

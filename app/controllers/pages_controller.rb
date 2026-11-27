@@ -112,11 +112,17 @@ class PagesController < ApplicationController
       params.dig(:deletion_request, :code) ||
       params[:missing_report_code] ||
       params[:code]
-    report = MissingReport.find_by(code: code.to_i)
 
     request_params = params[:deletion_request] || params
     request_params = ActionController::Parameters.new(request_params) unless request_params.respond_to?(:permit)
 
+    unless code.to_s.match?(/\A[0-9]+\z/)
+      flash.now[:alert] = "捜索願IDは数字で入力してください"
+      render :missing_report_registration, status: :unprocessable_entity
+      return
+    end
+
+    report = MissingReport.find_by(code: code.to_i)
     @deletion_request = DeletionRequest.new(
       missing_report: report,
       student_number: request_params[:student_number],

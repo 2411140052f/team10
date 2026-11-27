@@ -2,7 +2,8 @@ class MissingReport < ApplicationRecord
   has_one_attached :photo
   has_many :deletion_requests, dependent: :destroy
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 39, message: "は39文字以内で入力してください" }
+  validates :feature, length: { maximum: 39, message: "は39文字以内で入力してください" }
   validates :lost_place, presence: true
 
   before_create :assign_code

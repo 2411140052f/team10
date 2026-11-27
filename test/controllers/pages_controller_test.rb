@@ -15,6 +15,54 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "missing report registration limits name and feature to 39 characters" do
+    get missing_report_registration_url
+
+    assert_response :success
+    assert_select "input[name='missing_report[name]'][maxlength='39']"
+    assert_select "textarea[name='missing_report[feature]'][maxlength='39']"
+    assert_select "input[name='deletion_request[student_number]'][maxlength='10'][inputmode='numeric'][pattern='[0-9]{10}']"
+  end
+
+  test "deletion request ID accepts only digits" do
+    get missing_report_registration_url
+
+    assert_response :success
+    assert_select "input[name='deletion_request[missing_report_code]'][type='text'][inputmode='numeric'][pattern='[0-9]*']"
+
+    report = MissingReport.create!(name: "鍵", lost_place: "教室")
+    post deletion_requests_url, params: {
+      deletion_request: {
+        missing_report_code: "#{report.code}abc",
+        student_number: "123456",
+        name: "山田 太郎"
+      }
+    }
+
+    assert_response :unprocessable_entity
+    assert_select "p[role='alert']", text: "捜索願IDは数字で入力してください"
+    assert_empty DeletionRequest.all
+  end
+
+  test "deletion request requires exactly 10 numeric student number digits" do
+    report = MissingReport.create!(name: "鍵", lost_place: "教室")
+
+    ["123456789", "12345678901", "12345abc90"].each do |student_number|
+      post deletion_requests_url, params: {
+        deletion_request: {
+          missing_report_code: report.code,
+          student_number: student_number,
+          name: "山田 太郎"
+        }
+      }
+
+      assert_response :unprocessable_entity
+      assert_select "p[role='alert']", text: /半角数字10桁/
+    end
+
+    assert_empty DeletionRequest.all
+  end
+
   test "should get staff login" do
     get staff_login_url
     assert_response :success
@@ -152,7 +200,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     post deletion_requests_url, params: {
       deletion_request: {
         missing_report_code: report.code,
-        student_number: "123456",
+        student_number: "1234567890",
         name: "山田 太郎"
       }
     }
@@ -164,7 +212,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get handover_registration_url
 
     assert_response :success
-    assert_select "p", text: "申請者学籍番号: 123456"
+    assert_select "p", text: "申請者学籍番号: 1234567890"
     assert_select "p", text: "申請者氏名: 山田 太郎"
   end
 end
